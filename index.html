@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Investment Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .calculator {
+            background: wheat;
+            padding: 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 50px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+        }
+        .buttons {
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Mohammed Taha's Investment Calculator</h1>
+        <div class="form-group">
+            <label for="principal">Principal Amount:</label>
+            <input type="number" id="principal" placeholder="Enter principal amount">
+        </div>
+        <div class="form-group">
+            <label for="rate">Interest Rate (%):</label>
+            <input type="number" id="rate" placeholder="Enter interest rate">
+        </div>
+        <div class="form-group">
+            <label for="operation">Choose Operation:</label>
+            <select id="operation">
+                <option value="1">Calculate future value</option>
+                <option value="2">Calculate years to target</option>
+            </select>
+        </div>
+        <div class="form-group" id="extra-input" style="display: none;">
+            <label for="extra">Additional Input:</label>
+            <input type="number" id="extra" placeholder="Enter value">
+        </div>
+        <div class="buttons">
+            <button onclick="calculate()">Calculate</button>
+            <button onclick="reset()">Reset</button>
+        </div>
+        <div class="result" id="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const operationElement = document.getElementById('operation');
+        const extraInputElement = document.getElementById('extra-input');
+        const extraElement = document.getElementById('extra');
+        const resultElement = document.getElementById('result');
+
+        operationElement.addEventListener('change', () => {
+            if (operationElement.value === '1') {
+                extraInputElement.style.display = 'none';
+            } else {
+                extraInputElement.style.display = 'block';
+                extraElement.placeholder = 'Enter target amount';
+            }
+        });
+
+        function calculate() {
+            const principal = parseFloat(document.getElementById('principal').value);
+            const rate = parseFloat(document.getElementById('rate').value);
+            const operation = parseInt(operationElement.value);
+            const extra = parseFloat(extraElement.value);
+
+            if (isNaN(principal) || principal <= 0) {
+                alert('Please enter a valid principal amount.');
+                return;
+            }
+
+            if (isNaN(rate) || rate < 0) {
+                alert('Please enter a valid interest rate.');
+                return;
+            }
+
+            const annualRate = 1 + rate / 100;
+
+            if (operation === 1) {
+                const years = parseInt(prompt('Enter the years after which u want to withdraw:'));
+                if (isNaN(years) || years <= 0) {
+                    alert('Please enter a valid number of years.');
+                    return;
+                }
+                const futureValue = principal * Math.pow(annualRate, years);
+                resultElement.style.display = 'block';
+                resultElement.textContent = `The value of the investment after ${years} years is: ${futureValue.toFixed(2)}`;
+            } else if (operation === 2) {
+                if (isNaN(extra) || extra <= 0) {
+                    alert('Please enter a valid target amount.');
+                    return;
+                }
+                let years = 0;
+                let currentValue = principal;
+                while (currentValue < extra) {
+                    currentValue *= annualRate;
+                    years++;
+                    if (years > 100) {
+                        resultElement.style.display = 'block';
+                        resultElement.textContent = 'It will take more than 100 years to reach the target amount.';
+                        return;
+                    }
+                }
+                resultElement.style.display = 'block';
+                resultElement.textContent = `The total years taken to reach the target amount is: ${years}`;
+            } else {
+                alert('Invalid operation.');
+            }
+        }
+
+        function reset() {
+            document.getElementById('principal').value = '';
+            document.getElementById('rate').value = '';
+            operationElement.value = '1';
+            extraInputElement.style.display = 'none';
+            extraElement.value = '';
+            resultElement.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
